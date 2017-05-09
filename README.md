@@ -1,20 +1,26 @@
-# cacheman-mongo
+# cacheman-mongodb
 
-[![Build Status](https://travis-ci.org/cayasso/cacheman-mongo.png?branch=master)](https://travis-ci.org/cayasso/cacheman-mongo)
-[![NPM version](https://badge.fury.io/js/cacheman-mongo.png)](http://badge.fury.io/js/cacheman-mongo)
+[![NPM version](https://badge.fury.io/js/cacheman-mongodb.png)](http://badge.fury.io/js/cacheman-mongodb)
 
 MongoDB standalone caching library for Node.JS and also cache engine for [cacheman](https://github.com/cayasso/cacheman).
+
+## This is a fork
+
+Fork from https://github.com/cayasso/cacheman-mongo with the following differences,
+
+- Removed `pre-commit` from `dependencies`.
+- Updated `dependencies`.
 
 ## Instalation
 
 ``` bash
-$ npm install cacheman-mongo
+npm install cacheman-mongodb --save
 ```
 
 ## Usage
 
 ```javascript
-var CachemanMongo = require('cacheman-mongo');
+var CachemanMongo = require('cacheman-mongodb');
 var cache = new CachemanMongo();
 
 // set the value
@@ -31,7 +37,7 @@ cache.set('my key', { foo: 'bar' }, function (error) {
 
     // delete entry
     cache.del('my key', function (error){
-      
+
       if (error) throw error;
 
       console.log('value deleted');
@@ -45,10 +51,10 @@ cache.set('my key', { foo: 'bar' }, function (error) {
 
 ### CachemanMongo([options])
 
-Create `cacheman-mongo` instance. `options` are mongo valid options including `port`, `host`, `database` and `collection`.
+Create `cacheman-mongodb` instance. `options` are mongo valid options including `port`, `host`, `database` and `collection`.
 
 ```javascript
-var options = { 
+var options = {
   port: 9999,
   host: '127.0.0.1',
   username: 'beto',
