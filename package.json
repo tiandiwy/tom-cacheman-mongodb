@@ -1,17 +1,13 @@
 {
-  "name": "cacheman-mongo",
-  "version": "1.0.3",
+  "name": "cacheman-mongodb",
+  "version": "0.0.0",
   "description": "MongoDB standalone caching library for Node.JS and also cache engine for cacheman",
-  "author": "Jonathan Brumley <cayasso@gmail.com>",
   "main": "./node/index",
   "scripts": {
-    "test": "make test",
-    "prepublish": "make"
+    "test": "mocha",
+    "prepublish": "babel lib -d node/"
   },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/cayasso/cacheman-mongo.git"
-  },
+  "repository": "ratson/cacheman-mongodb",
   "keywords": [
     "cache",
     "mongodb",
@@ -24,10 +20,10 @@
   "license": "MIT",
   "devDependencies": {
     "babel-cli": "^6.4.5",
-    "babel-core": "^6.4.5",
     "babel-plugin-add-module-exports": "^0.1.2",
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-stage-2": "^6.3.13",
+    "babel-register": "^6.24.1",
     "mocha": "*",
     "pre-commit": "^1.1.2"
   },
