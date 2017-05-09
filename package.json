@@ -1,6 +1,6 @@
 {
   "name": "cacheman-mongodb",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "MongoDB standalone caching library for Node.JS and also cache engine for cacheman",
   "main": "./node/index",
   "scripts": {
