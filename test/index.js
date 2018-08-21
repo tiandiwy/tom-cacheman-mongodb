@@ -1,5 +1,5 @@
 import { MongoClient } from 'mongodb';
-import Cache from '../lib/index';
+import Cache from '..';
 import assert from 'assert';
 import crypto from 'crypto';
 import fs from 'fs';
