@@ -9,15 +9,14 @@ let cache;
 
 describe('cacheman-mongo', function () {
 
-  before(function(done){
+  before(async () => {
     cache = new Cache({ host: '127.0.0.1', port: 27017, database: 'cacheman-mongo-test' });
-    done();
   });
 
-  after(function(done){
-    cache.clear(function() {
-      cache.client.dropDatabase(done);
-    });
+  after(async () => {
+    await cache.clear()
+    await cache.client.dropDatabase()
+    await cache.closeMongoClient()
   });
 
   it('should have main methods', function () {
@@ -91,18 +90,19 @@ describe('cacheman-mongo', function () {
   });
 
   it('should clear items', function (done) {
+    const cache2 = new Cache('mongodb://127.0.0.1:27017/cacheman-mongo-test-2');
     let value = Date.now();
-    cache.set('test6', value, function (err) {
-      if (err) return done(err);
-      cache.get('test6', function (err, data) {
-        if (err) return done(err);
+    cache2.set('test6', value, function (err) {
+      if (err) return cache2.closeMongoClient(() => done(err))
+      cache2.get('test6', function (err, data) {
+        if (err) return cache2.closeMongoClient(() => done(err))
         assert.equal(data, value);
-        cache.clear(function (err) {
-          if (err) return done(err);
-          cache.get('test6', function (err, data) {
-            if (err) return done(err);
+        cache2.clear(function (err) {
+          if (err) return cache2.closeMongoClient(() => done(err))
+          cache2.get('test6', function (err, data) {
+            if (err) return cache2.closeMongoClient(() => done(err))
             assert.equal(data, null);
-            done();
+            cache2.closeMongoClient(done)
           });
         });
       });
@@ -124,42 +124,42 @@ describe('cacheman-mongo', function () {
   });
 
   it('should allow passing mongodb connection string', function (done) {
-    cache = new Cache(uri);
-    cache.set('test8', { a: 1 }, function (err) {
-      if (err) return done(err);
-      cache.get('test8', function (err, data) {
-        if (err) return done(err);
+    const cache2 = new Cache(uri);
+    cache2.set('test8', { a: 1 }, function (err) {
+      if (err) return cache2.closeMongoClient(() => done(err))
+      cache2.get('test8', function (err, data) {
+        if (err) return cache2.closeMongoClient(() => done(err))
         assert.equal(data.a, 1);
-        done();
+        cache2.closeMongoClient(done)
       });
     });
   });
 
   it('should allow passing mongo db instance as first argument', function (done) {
-    MongoClient.connect(uri, function (err, db) {
-      if (err) return done(err);
-      cache = new Cache(db);
-      cache.set('test9', { a: 1 }, function (err) {
-        if (err) return done(err);
-        cache.get('test9', function (err, data) {
-          if (err) return done(err);
+    MongoClient.connect(uri, { useNewUrlParser: true }, function (err, mongoClient) {
+      if (err) return done(err)
+      const cache2 = new Cache(mongoClient.db());
+      cache2.set('test9', { a: 1 }, function (err) {
+        if (err) return cache2.closeMongoClient(() => done(err))
+        cache2.get('test9', function (err, data) {
+          if (err) return cache2.closeMongoClient(() => done(err))
           assert.equal(data.a, 1);
-          done();
+          mongoClient.close(done)
         });
       });
     });
   });
 
-  it('should sllow passing mongo db instance as client in object', function (done) {
-    MongoClient.connect(uri, function (err, db) {
+  it('should allow passing mongo db instance as client in object', function (done) {
+    MongoClient.connect(uri, { useNewUrlParser: true }, function (err, mongoClient) {
       if (err) return done(err);
-      cache = new Cache({ client: db });
-      cache.set('test9', { a: 1 }, function (err) {
-        if (err) return done(err);
-        cache.get('test9', function (err, data) {
-          if (err) return done(err);
+      const cache2 = new Cache({ client: mongoClient.db() });
+      cache2.set('test9', { a: 1 }, function (err) {
+        if (err) return cache2.closeMongoClient(() => done(err))
+        cache2.get('test9', function (err, data) {
+          if (err) return cache2.closeMongoClient(() => done(err))
           assert.equal(data.a, 1);
-          done();
+          mongoClient.close(done)
         });
       });
     });
@@ -185,22 +185,22 @@ describe('cacheman-mongo', function () {
   });
 
   describe('cacheman-mongo compression', function () {
-
-    before(function(done){
-      cache = new Cache({ compression: true });
-      done();
+    let cache3
+    before(async () => {
+      cache3 = new Cache({ compression: true, database: 'cacheman-mongo-test' });
     });
 
-    after(function(done){
-      cache.clear(done);
+    after(async () => {
+      await cache3.clear()
+      await cache3.closeMongoClient()
     });
 
     it('should store compressable item compressed', function (done) {
       let value = Date.now().toString();
 
-      cache.set('test1', new Buffer(value), function (err) {
+      cache3.set('test1', new Buffer(value), function (err) {
         if (err) return done(err);
-        cache.get('test1', function (err, data) {
+        cache3.get('test1', function (err, data) {
           if (err) return done(err);
           assert.equal(data.toString(), value);
           done();
@@ -211,9 +211,9 @@ describe('cacheman-mongo', function () {
     it('should store non-compressable item normally', function (done) {
       let value = Date.now().toString();
 
-      cache.set('test1', value, function (err) {
+      cache3.set('test2', value, function (err) {
         if (err) return done(err);
-        cache.get('test1', function (err, data) {
+        cache3.get('test2', function (err, data) {
           if (err) return done(err);
           assert.equal(data, value);
           done();
@@ -225,9 +225,9 @@ describe('cacheman-mongo', function () {
       let value = fs.readFileSync('./test/large.bin'), // A file larger than the 16mb MongoDB document size limit
           md5 = function(d){ return crypto.createHash('md5').update(d).digest('hex'); };
 
-      cache.set('test1', value, function (err) {
+      cache3.set('test3', value, function (err) {
         if (err) return done(err);
-        cache.get('test1', function (err, data) {
+        cache3.get('test3', function (err, data) {
           if (err) return done(err);
           assert.equal(md5(data), md5(value));
           done();
