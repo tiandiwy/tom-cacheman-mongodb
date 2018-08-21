@@ -30,6 +30,6 @@
     "test"
   ],
   "engines": {
-    "node": ">=4"
+    "node": ">= 8"
   }
 }
