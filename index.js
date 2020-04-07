@@ -73,11 +73,13 @@ class MongoStore {
 
                 this.closeMongoClient = mongoClient.close.bind(mongoClient)
 
-                await createIndex(db, coll)
+                try{await createIndex(db, coll)}
+                catch(e){}
                 return this.client = db
             } else {
                 if (this.client) {
-                    await createIndex(this.client, coll)
+                    try{await createIndex(this.client, coll)}
+                    catch(e){}
                     return this.client
                 }
             }
