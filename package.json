@@ -1,6 +1,6 @@
 {
   "name": "tom-cacheman-mongodb",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "MongoDB standalone caching library for Node.JS and also cache engine for cacheman,forked from ratson/cacheman-mongodb",
   "scripts": {
     "test": "mocha"
@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "esm": "3.2.20",
-    "mongodb": "^3.2.3",
+    "mongodb": "^3.6.3",
     "mongodb-uri": "^0.9.7"
   },
   "pre-commit": [
