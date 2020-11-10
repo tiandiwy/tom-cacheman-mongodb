@@ -22,7 +22,8 @@ const OPTIONS_LIST = [
     'prefix',
     'ttl',
     'count',
-    'hosts'
+    'hosts',
+    'options'
 ]
 
 const createIndex = (db, coll) => db.createIndex(coll, { 'expireAt': 1 }, { expireAfterSeconds: 0 })
